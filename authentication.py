@@ -16,7 +16,6 @@ def load_credentials():
                 user_credentials[username] = hashed_password
     except FileNotFoundError:
         pass  # If the file doesn't exist initially, handle the exception
-
     return user_credentials
 
 user_credentials = load_credentials()  # Load user credentials when the system starts

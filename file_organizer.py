@@ -19,6 +19,35 @@ def add_file(filename, details):
 def retrieve_file(filename):
     return file_details.get(filename, "File not found")
 
+import tkinter as tk
+from tkinter import filedialog
+import os
+from datetime import datetime
+
+def add_file(filename, details):
+    file_details[filename] = details
+
+def select_file():
+    root = tk.Tk()
+    root.withdraw()  # Hide the main window
+
+    file_path = filedialog.askopenfilename()  # Open file dialog for file selection
+
+    if file_path:
+        file_name = os.path.basename(file_path)  # Extract file name
+        file_size = os.path.getsize(file_path)  # Get file size
+        file_type = os.path.splitext(file_path)[-1]  # Get file extension
+        date_modified = datetime.fromtimestamp(os.path.getmtime(file_path)).strftime('%Y-%m-%d')  # Get modification date
+
+        details = {
+            'file_type': file_type,
+            'file_size': file_size,
+            'date_modified': date_modified
+        }
+
+        add_file(file_name, details)  # Add file details to file_details dictionary
+        print(f"File '{file_name}' details added successfully:\n{details}")
+
 def user_interface():
     print("Welcome to File Organizer!")
     while True:
