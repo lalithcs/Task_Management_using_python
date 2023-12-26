@@ -1,3 +1,6 @@
+#Author: Challa Saraswathi Lalith
+#Date:26-12-2023
+#Project: DIgital Desogn Project
 from itertools import product
 
 # Function to generate truth table for a given number of variables
