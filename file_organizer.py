@@ -25,7 +25,18 @@ import os
 from datetime import datetime
 
 def add_file(filename, details):
-    file_details[filename] = details
+    with open('data.py', 'r') as file:
+        data = file.readlines()
+
+    for idx, line in enumerate(data):
+        if 'file_details = {' in line:
+            indent = line.index('file_details')
+            data.insert(idx + 1, f"{' ' * (indent + 4)}'{filename}': {details},\n")
+            break
+
+    with open('data.py', 'w') as file:
+        file.writelines(data)
+    file_details[filename]=details
 
 def select_file():
     root = tk.Tk()
@@ -51,7 +62,7 @@ def select_file():
 def user_interface():
     print("Welcome to File Organizer!")
     while True:
-        print("\n1. Sort Files\n2. Display Files\n3. Retrieve File Details\n4. Back to Main Menu")
+        print("\n1. Sort Files\n2. Display Files\n3. Retrieve File Details\n4. Add File\n5. Back to Main Menu")
         choice = input("Enter your choice: ")
 
         if choice == '1':
@@ -73,6 +84,8 @@ def user_interface():
             else:
                 print("File not found.")
         elif choice == '4':
+            select_file()
+        elif choice == '5':
             print("Returning to main menu...")
             break
         else:
