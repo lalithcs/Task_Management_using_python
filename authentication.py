@@ -1,58 +1,48 @@
 from hashlib import sha256
-from data import file_details  # Importing the file_details dictionary from data.py
-
-user_credentials = {'user1': 'password1'}  # Example initial user
 
 def save_credentials(username, password):
-    hashed_password = sha256(password.encode()).hexdigest()
-    user_credentials[username] = hashed_password
-
-def check_credentials(username, password):
-    stored_password = user_credentials.get(username)
-    if stored_password:
+    with open('user_credentials.txt', 'a') as file:
         hashed_password = sha256(password.encode()).hexdigest()
-        return stored_password == hashed_password
-    return False
+        file.write(f"{username}:{hashed_password}\n")
+    print("Registration successful!")
 
-def save_password(filename, password):
-    encrypted_password = sha256(password.encode()).hexdigest()
-    file_details[filename] = {'password': encrypted_password}
+def load_credentials():
+    user_credentials = {}
+    try:
+        with open('user_credentials.txt', 'r') as file:
+            lines = file.readlines()
+            for line in lines:
+                username, hashed_password = line.strip().split(':')
+                user_credentials[username] = hashed_password
+    except FileNotFoundError:
+        pass  # If the file doesn't exist initially, handle the exception
 
-def retrieve_password(filename, entered_password):
-    stored_password = file_details.get(filename, {}).get('password')
-    if stored_password:
-        entered_password = sha256(entered_password.encode()).hexdigest()
-        return stored_password == entered_password
-    return False
+    return user_credentials
+
+user_credentials = load_credentials()  # Load user credentials when the system starts
+
+def save_user_credentials():
+    with open('user_credentials.txt', 'w') as file:
+        for username, hashed_password in user_credentials.items():
+            file.write(f"{username}:{hashed_password}\n")
 
 def user_registration():
     print("Register a new account")
     username = input("Enter username: ")
     password = input("Enter password: ")
+    user_credentials[username] = sha256(password.encode()).hexdigest()
     save_credentials(username, password)
+    save_user_credentials()  # Save updated credentials to the file
     print("Registration successful!")
 
 def user_login():
     print("Login")
     username = input("Enter username: ")
     password = input("Enter password: ")
-    if check_credentials(username, password):
+    stored_password = user_credentials.get(username)
+    if stored_password and stored_password == sha256(password.encode()).hexdigest():
         print("Login successful!")
         return True
     else:
         print("Invalid username or password.")
         return False
-
-def add_password():
-    filename = input("Enter filename: ")
-    password = input("Enter password: ")
-    save_password(filename, password)
-    print("Password saved!")
-
-def retrieve_and_validate_password():
-    filename = input("Enter filename: ")
-    entered_password = input("Enter password: ")
-    if retrieve_password(filename, entered_password):
-        print("Password correct!")
-    else:
-        print("Incorrect password or file doesn't exist.")
